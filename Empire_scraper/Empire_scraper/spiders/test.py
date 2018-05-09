@@ -1,20 +1,27 @@
 from scrapy.spider import BaseSpider
 from scrapy.selector import HtmlXPathSelector
 from Empire_scraper.items import EmpireScraperItem
-import os
+
+import os #needed to allow deletion of files
 
 
 class MySpider(BaseSpider):
     name = "empire"
+    
+    #only goes within the internal sites 
+    #(finds external sites on the internal site)
     allowed_domains = ["craigslist.org"]
+
+    #top-level URL
     start_urls = ["http://columbusga.craigslist.org/search/reo/"]
 
+    #name of file containing the list of links
     myfile="/Users/citsbv/dev/empiresrcaper/empirescraper/Empire_scraper/Empire_scraper/items.csv"
-
-    ## if file exists, delete it ##
-    if os.path.isfile(myfile):
+    
+    if os.path.isfile(myfile): #if file exists, delete it
         os.remove(myfile)
-    else:    ## Show an error ##
+    
+    else: #if file not found then show an error     
         print("Error: %s file not found" % myfile)
 
     def parse(self, response):
