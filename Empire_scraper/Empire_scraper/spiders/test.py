@@ -15,5 +15,8 @@ class MySpider(BaseSpider):
             item = EmpireScraperItem()
             item["title"] = titles.select("a/text()").extract()
             item["link"] = titles.select("a/@href").extract()
-            items.append(item)
+            
+            if ("/6584243056.html" not in str(item["link"])):
+                items.append(item)
+    
         return items
