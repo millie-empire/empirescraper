@@ -21,6 +21,10 @@ NEWSPIDER_MODULE = 'Empire_scraper.spiders'
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
 
+#Export as CSV File
+FEED_FORMAT = "csv"
+FEED_URI = "items.csv"
+
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
 
