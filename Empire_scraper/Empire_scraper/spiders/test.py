@@ -6,26 +6,30 @@ from Empire_scraper.items import EmpireScraperItem
 
 import os #needed to allow deletion of files
 
+#checks if items.csv file already exists 
+def delete_file():
+        #name of file containing the list of links
+        myfile="/Users/citsbv/dev/empiresrcaper/empirescraper/Empire_scraper/items.csv"
+    
+        if os.path.isfile(myfile): #if file exists, delete it
+            os.remove(myfile)
+    
+        else: #if file not found then show an error     
+            print("Error: %s file not found" % myfile)
 
 class MySpider(BaseSpider):
     name = "empire"
     
+    #calls the method to check is items.csv exists (find where the file is 
+    #created and move it there)
+    delete_file()
+
     #only goes within the internal sites 
     #(finds external sites on the internal site)
     allowed_domains = ["empire.ca","empirelife.ca","empirelifeinvestments.ca"]
 
     #top-level URL
-    start_urls = ["https://www.empire.ca/"]
-
-    #name of file containing the list of links
-    myfile="/Users/citmst/dev/empirescraper/Empire_scraper/Empire_scraper/items.csv"
-    
-    if os.path.isfile(myfile): #if file exists, delete it
-        os.remove(myfile)
-    
-    else: #if file not found then show an error     
-        print("Error: %s file not found" % myfile)
-
+    start_urls = ["https://www.empire.ca/", "https://lifeandmoneymatters.empire.ca/", "https://plus.fastandfull.ca/"]
 
     rules = [
         Rule(
@@ -61,3 +65,6 @@ class MySpider(BaseSpider):
                 items.append(item)
         
         return items
+
+
+
