@@ -1,6 +1,8 @@
-from scrapy.spider import BaseSpider
-from scrapy.selector import HtmlXPathSelector
+import scrapy
+from scrapy.linkextractor import LinkExtractor
+from scrapy.spider import Rule, BaseSpider
 from Empire_scraper.items import EmpireScraperItem
+
 
 import os #needed to allow deletion of files
 
@@ -10,13 +12,13 @@ class MySpider(BaseSpider):
     
     #only goes within the internal sites 
     #(finds external sites on the internal site)
-    allowed_domains = ["craigslist.org"]
+    allowed_domains = ["empire.ca","empirelife.ca","empirelifeinvestments.ca"]
 
     #top-level URL
-    start_urls = ["http://columbusga.craigslist.org/search/reo/"]
+    start_urls = ["https://www.empire.ca/"]
 
     #name of file containing the list of links
-    myfile="/Users/citsbv/dev/empiresrcaper/empirescraper/Empire_scraper/Empire_scraper/items.csv"
+    myfile="/Users/citmst/dev/empirescraper/Empire_scraper/Empire_scraper/items.csv"
     
     if os.path.isfile(myfile): #if file exists, delete it
         os.remove(myfile)
@@ -24,15 +26,38 @@ class MySpider(BaseSpider):
     else: #if file not found then show an error     
         print("Error: %s file not found" % myfile)
 
+
+    rules = [
+        Rule(
+            LinkExtractor(
+                canonicalize=True,
+                unique=True
+            ),
+            follow=True,
+            callback="parse"
+        )
+    ]
+
+    # Method which starts the requests by visiting all URLs specified in start_urls
+    def start_requests(self):
+        for url in self.start_urls:
+            yield scrapy.Request(url, callback=self.parse, dont_filter=True)
+
     def parse(self, response):
-        titles = response.selector.xpath("//p") 
-        items = []                              
-        for titles in titles:
-            item = EmpireScraperItem()         
-            item["title"] = titles.select("a/text()").extract()   # gets title
-            item["link"] = titles.select("a/@href").extract()     # gets link
+        items = []     
+        links = LinkExtractor(canonicalize=True, unique=True).extract_links(response)                         
+        for link in links:
             
-            if ("/6584243056.html" not in str(item["link"])):     # filters out internal sites
+            # Check whether the domain of the URL of the link is allowed; so whether it is in one of the allowed domains
+            is_allowed = True
+            for allowed_domain in self.allowed_domains:
+                if allowed_domain in link.url:
+                    is_allowed = False
+            # If it is allowed, create a new item and add it to the list of found items
+            if is_allowed:
+                item = EmpireScraperItem() 
+                item['link_from'] = response.url
+                item['link'] = link.url
                 items.append(item)
-    
+        
         return items

@@ -11,5 +11,5 @@ from scrapy.item import Item, Field
 class EmpireScraperItem(Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
-    title = Field()
+    link_from = Field()
     link = Field()
