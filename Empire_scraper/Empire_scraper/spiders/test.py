@@ -6,27 +6,21 @@ from Empire_scraper.items import EmpireScraperItem
 
 import os #needed to allow deletion of files
 
+#removes the previous csv file 
+os.remove("/Users/citsbv/dev/empiresrcaper/empirescraper/Empire_scraper/Empire_scraper/items.csv")
 
 class MySpider(BaseSpider):
     name = "empire"
     
     #only goes within the internal sites 
     #(finds external sites on the internal site)
-    allowed_domains = ["empire.ca","empirelife.ca","empirelifeinvestments.ca"]
+    allowed_domains = ["empire.ca","empirelife.ca","empirelifeinvestments.ca", "empirelife-prod.auth0.com", "empire.wistia.com"]
 
     #top-level URL
     start_urls = ["https://www.empire.ca/"]
 
-    #name of file containing the list of links
-    myfile="/Users/citmst/dev/empirescraper/Empire_scraper/Empire_scraper/items.csv"
-    
-    if os.path.isfile(myfile): #if file exists, delete it
-        os.remove(myfile)
-    
-    else: #if file not found then show an error     
-        print("Error: %s file not found" % myfile)
-
-
+    #the spider has one rule: extract all (unique and canonicalized) links, 
+    #follow then and parse them using the parse_items method
     rules = [
         Rule(
             LinkExtractor(
@@ -48,11 +42,13 @@ class MySpider(BaseSpider):
         links = LinkExtractor(canonicalize=True, unique=True).extract_links(response)                         
         for link in links:
             
-            # Check whether the domain of the URL of the link is allowed; so whether it is in one of the allowed domains
+            # Check whether the domain of the URL of the link is allowed; 
+            # so whether it is in one of the allowed domains
             is_allowed = True
             for allowed_domain in self.allowed_domains:
                 if allowed_domain in link.url:
                     is_allowed = False
+            
             # If it is allowed, create a new item and add it to the list of found items
             if is_allowed:
                 item = EmpireScraperItem() 
