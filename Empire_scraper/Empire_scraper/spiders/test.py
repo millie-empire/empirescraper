@@ -2,12 +2,13 @@ import scrapy
 from scrapy.linkextractor import LinkExtractor
 from scrapy.spider import Rule, BaseSpider
 from Empire_scraper.items import EmpireScraperItem
-
-
+from pathlib import Path
 import os #needed to allow deletion of files
 
-#removes the previous csv file 
-os.remove("/Users/citsbv/dev/empiresrcaper/empirescraper/Empire_scraper/Empire_scraper/items.csv")
+#checks if the items.csv file exists, if it does then it gets deleted
+my_file = Path("/Users/citsbv/downloads/testcrawl/testcrawl/testing.csv")
+if my_file.is_file():
+   os.remove(my_file)
 
 class MySpider(BaseSpider):
     name = "empire"
