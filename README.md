@@ -6,16 +6,16 @@ The Empire Scraper will scrape the homepage of empire.ca and output a list of ex
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. 
 
-**Prerequisites**
+>**Prerequisites**
 
-To install Scrapy, open up terminal and type the command: 
-
-```
-pip install scrapy
-```
-
-If you run into any issues, refer to the document below for alternative installation commands:
-https://doc.scrapy.org/en/latest/intro/install.html
+>To install Scrapy, open up terminal and type the command: 
+>
+>```
+>pip install scrapy
+>```
+>
+>If you run into any issues, refer to the document below for alternative installation commands:
+>https://doc.scrapy.org/en/latest/intro/install.html
 
 **Running the Program**
 
@@ -27,6 +27,13 @@ scrapy crawl empire
 
 Once the program has finished running, open the items.csv file. It should have two columns, link (list of external links) and link_from (origin of external links), similar to the image below:
 
+
+| link                                      | link_from              |
+|-------------------------------------------|------------------------|
+| https://www.facebook.com/EmpireLife/      | https://www.empire.ca/ |
+| https://www.linkedin.com/company/1356397/ | https://www.empire.ca/ |
+| https://twitter.com/EmpireLife            | https://www.empire.ca/ |
+| https://www.instagram.com/empirelife/     | https://www.empire.ca/ |
 
 **Built With**
 
