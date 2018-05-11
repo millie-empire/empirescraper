@@ -6,7 +6,7 @@ from pathlib import Path
 import os #needed to allow deletion of files
 
 #checks if the items.csv file exists, if it does then it gets deleted
-my_file = Path("/Users/citsbv/downloads/testcrawl/testcrawl/testing.csv")
+my_file = Path("./items.csv")
 if my_file.is_file():
    os.remove(my_file)
 
