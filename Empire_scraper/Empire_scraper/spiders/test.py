@@ -2,20 +2,13 @@ import scrapy
 from scrapy.linkextractor import LinkExtractor
 from scrapy.spider import Rule, BaseSpider
 from Empire_scraper.items import EmpireScraperItem
-
-
+from pathlib import Path
 import os #needed to allow deletion of files
 
-#checks if items.csv file already exists 
-def delete_file():
-        #name of file containing the list of links
-        myfile="/Users/citsbv/dev/empiresrcaper/empirescraper/Empire_scraper/items.csv"
-    
-        if os.path.isfile(myfile): #if file exists, delete it
-            os.remove(myfile)
-    
-        else: #if file not found then show an error     
-            print("Error: %s file not found" % myfile)
+#checks if the items.csv file exists, if it does then it gets deleted
+my_file = Path("./items.csv")
+if my_file.is_file():
+   os.remove(my_file)
 
 class MySpider(BaseSpider):
     name = "empire"
@@ -26,11 +19,13 @@ class MySpider(BaseSpider):
 
     #only goes within the internal sites 
     #(finds external sites on the internal site)
-    allowed_domains = ["empire.ca","empirelife.ca","empirelifeinvestments.ca"]
+    allowed_domains = ["empire.ca","empirelife.ca","empirelifeinvestments.ca", "empirelife-prod.auth0.com", "empire.wistia.com"]
 
     #top-level URL
     start_urls = ["https://www.empire.ca/", "https://lifeandmoneymatters.empire.ca/", "https://plus.fastandfull.ca/"]
 
+    #the spider has one rule: extract all (unique and canonicalized) links, 
+    #follow then and parse them using the parse_items method
     rules = [
         Rule(
             LinkExtractor(
@@ -52,11 +47,13 @@ class MySpider(BaseSpider):
         links = LinkExtractor(canonicalize=True, unique=True).extract_links(response)                         
         for link in links:
             
-            # Check whether the domain of the URL of the link is allowed; so whether it is in one of the allowed domains
+            # Check whether the domain of the URL of the link is allowed; 
+            # so whether it is in one of the allowed domains
             is_allowed = True
             for allowed_domain in self.allowed_domains:
                 if allowed_domain in link.url:
                     is_allowed = False
+            
             # If it is allowed, create a new item and add it to the list of found items
             if is_allowed:
                 item = EmpireScraperItem() 
