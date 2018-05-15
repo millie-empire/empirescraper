@@ -59,7 +59,7 @@ class MySpider(Spider):
           
              
         links = LinkExtractor(canonicalize=True, unique=True).extract_links(response)       
-        fields = ["link", "link_from"]                  
+                        
                           
         for link in links:
                 # Check whether the domain of the URL of the link is external; 
@@ -71,16 +71,26 @@ class MySpider(Spider):
                     is_allowed = False
                     # If it is an external link, create a new item and add it to the list of found items
             if is_allowed:
-                item = EmpireScraperItem() 
-                item['link_from'] = response.url
-                item['link'] = link.url
+                recorded = False
+                for i in self.items:
+                    if link.url == i['link']:
+                        recorded = True
+                        i['link_from'].append(response.url)
+                        break
                 
-                if item['link'] not in self.items:
-                    with open('items.csv','a+') as f:
-                        f.write("{}\n".format('\t'.join(str(item[field]) 
-                            for field in fields)))
-                        f.close()
+                if not recorded:
+                    item = EmpireScraperItem() 
+                    item['link_from'] = []
+                    item['link_from'].append(response.url)
+                    item['link'] = link.url
                     self.items.append(item)
+                    #if item['link'] not in self.items:
+                        # with open('items.csv','a+') as f:
+                        #     f.write("{}\n".format('\t'.join(str(item[field]) 
+                        #         for field in fields)))
+                        #     f.close()
+                        #self.items.append(item)
+
 
 
             # internal link but not checked and is not a document
@@ -89,10 +99,17 @@ class MySpider(Spider):
                 # recursively checks internal links that have not been checked
                 yield scrapy.Request(link.url, callback=self.parse)
 
-        #self.i += 1
+            #self.i += 1
+
+    fields = ["link", "link_from"]  
+    with open('items.csv','a+') as f:
+        for this in items:    
+            f.write("{}\n".format('\t'.join(str(this[field]) 
+                    for field in fields)))
+    f.close()
 
 
-        print("hello", self.items)
+        #print("hello", self.items)
         # fields = ["link", "link_from"] # define fields to use
         # with open('items.csv','a+') as f: # handle the source file
         #     # f.write("{}\n".format('\t'.join(str(field) 
@@ -102,13 +119,6 @@ class MySpider(Spider):
         #             for field in fields))) # write items
 
         #return self.items
-
-    # def parse_internal(self, response):
-    #     item = EmpireScraperItem() 
-    #     item['link_from'] = response.url
-    #     item['link'] = response.xpath('a/@href').extract()
-        
-    #     return item
 
 
 
