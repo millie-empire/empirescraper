@@ -9,11 +9,11 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import csv
 import os #needed to allow deletion of files
+import googleapiclient._auth
 
 #allows the code to access googlesheets 
-scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
-creds = ServiceAccountCredentials.from_json_keyfile_name('client_secret.json', scope)
-client = gspread.authorize(creds)
+credentials= googleapiclient._auth.with_scopes(googleapiclient._auth.default_credentials(), scopes=['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive'])
+client = gspread.authorize(credentials)
  
 # Find a workbook by name and open the first sheet
 # Make sure you use the right name here.
