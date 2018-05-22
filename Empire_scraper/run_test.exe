@@ -1,9 +1,50 @@
 #!/bin/bash  
 echo "This script will run the Empire_scraper repo"
 cd
-pwd
-export GOOGLE_API_CREDENTIALS="~/client.json"
-cd dev
-cd Empire_scraper
-cd Empire_scraper
+
+#finds the path of the file with the API credentials
+array=(`find $PWD -name client_secret.json`)
+limit=1
+for i in "${array[@]}"
+#finds the final path of the file with the API credentials
+do :
+	echo $limit
+	if [ "${#array[@]}" -eq "${limit}" ]; then
+    	#when at the last value (correct location
+    	#of the client_secret.json) and
+    	#stores path of the file
+    	file_path=$i
+	fi
+	let "limit++"
+done
+#creates an environment variable to point to API creds file
+export GOOGLE_API_CREDENTIALS=$file_path  
+
+
+
+#finds the location of requirements.txt
+array=(`find $PWD -name requirements.txt`)
+limit=1
+for i in "${array[@]}"
+#finds the final path of the requirements.txt
+do :
+	echo $limit
+	if [ "${#array[@]}" -eq "${limit}" ]; then
+    	#when at the last value (correct location
+    	#of the client_secret.json) and
+    	#stores path of the file
+    	dir=$i
+    	#gets the directory of the requirements.txt
+    	parent_path="$(dirname "$dir")"
+	fi
+	let "limit++"
+done
+#got to the directory with requirements.txt
+cd $parent_path
+#installs the required packages
+pip install -r requirements.txt
+
+
+
+#runs the scraper code
 scrapy crawl empire
