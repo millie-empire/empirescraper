@@ -8,7 +8,6 @@ limit=1
 for i in "${array[@]}"
 #finds the final path of the file with the API credentials
 do :
-	echo $limit
 	if [ "${#array[@]}" -eq "${limit}" ]; then
     	#when at the last value (correct location
     	#of the client_secret.json) and
@@ -28,7 +27,6 @@ limit=1
 for i in "${array[@]}"
 #finds the final path of the requirements.txt
 do :
-	echo $limit
 	if [ "${#array[@]}" -eq "${limit}" ]; then
     	#when at the last value (correct location
     	#of the client_secret.json) and
@@ -41,10 +39,11 @@ do :
 done
 #got to the directory with requirements.txt
 cd $parent_path
+
 #installs the required packages
 pip install -r requirements.txt
-
-
+pwd
+cd Empire_scraper
 
 #runs the scraper code
 scrapy crawl empire
