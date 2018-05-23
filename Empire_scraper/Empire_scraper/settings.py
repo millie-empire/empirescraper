@@ -21,9 +21,9 @@ NEWSPIDER_MODULE = 'Empire_scraper.spiders'
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
 
-#Export as CSV File
-FEED_FORMAT = "csv"
-FEED_URI = "items.csv"
+# #Export as CSV File
+# FEED_FORMAT = "csv"
+# FEED_URI = "items.csv"
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
@@ -35,6 +35,8 @@ FEED_URI = "items.csv"
 # The download delay setting will honor only one of:
 #CONCURRENT_REQUESTS_PER_DOMAIN = 16
 #CONCURRENT_REQUESTS_PER_IP = 16
+
+DOWNLOAD_TIMEOUT = 10 
 
 # Disable cookies (enabled by default)
 #COOKIES_ENABLED = False

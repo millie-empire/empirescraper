@@ -20,19 +20,7 @@ import os #needed to allow deletion of files
 credentials= googleapiclient._auth.with_scopes(googleapiclient._auth.default_credentials(), scopes=['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive'])
 client = gspread.authorize(credentials)
  
-# Find a workbook by name and open the first sheet
-# Make sure you use the right name here.
-sheet = client.open("Test sheet").sheet1
- 
-#clears the data on the sheet
-cell_list = sheet.range('A1:Z1000')
-for cell in cell_list:
-    cell.value = ' '
-sheet.update_cells(cell_list)
 
-my_file = Path("./items.csv")
-if my_file.is_file():
-   os.remove(my_file)
 
 class MySpider(Spider):
     name = "empire"
@@ -132,15 +120,42 @@ class MySpider(Spider):
             #self.i += 1
         
 
-    # output to csv before spider closes
+    # output to Google sheets before spider closes
     def spider_closed(self, spider):
-        fields = ["link", "link_from"]  
-        with open('items.csv','a+') as f:
-            f.write("{}\n".format('\t'.join(str(field) 
-                    for field in fields))) # write header
+        sheet = client.open("Empire Scraper Output")
+        output_sheet = sheet.worksheet("Output")
+ 
+        #clears the data on the sheet
+        output_sheet.clear()
 
-            for this in self.items:    
-                f.write("{}\n".format('\t'.join(str(this[field]) 
-                        for field in fields)))
-        f.close()
+        # prints titles of columns
+        output_sheet.update_cell(1,1,'External Link')
+        output_sheet.update_cell(1,2,'Found on this Page')
+
+        external_list = output_sheet.range('A2:A1000')
+        internal_list = output_sheet.range('B2:B1000')
+
+        index = 0
+
+        for item in self.items:  
+            # print external link
+            external_list[index].value = item['link']
+            for internal_link in item['link_from']:
+                # print corresponding internal links for external link
+                internal_list[index].value = internal_link
+                index += 1
+
+        # prints to Google sheet
+        output_sheet.update_cells(external_list)
+        output_sheet.update_cells(internal_list)
+
+
+
+
+
+
+
+
+
+
 
