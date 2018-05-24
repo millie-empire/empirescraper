@@ -1,5 +1,5 @@
 Scrapy==1.5.0
 gspread==3.0.0
-google-api-python-client=1.6.7
+google-api-python-client==1.6.7
 oauth2client==4.1.2
 httplib2==0.11.3

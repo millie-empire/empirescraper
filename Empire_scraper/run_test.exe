@@ -2,6 +2,7 @@
 
 #Start up
 if [ ${1:-false} == "setupdev" ]
+then
     #start message
     echo "Installing required packages"
     
@@ -48,7 +49,26 @@ if [ ${1:-false} == "setupdev" ]
     #installs the required packages
     pip install -r requirements.txt
     
-    cd Empire_scraper
+    cd
+    array=(`find $PWD -name thisisalocationfile.txt`)
+    limit=1
+    for i in "${array[@]}"
+    #finds the final path of the file with the API credentials
+    do :
+       if [ "${#array[@]}" -eq "${limit}" ]; then
+        #when at the last value (correct location
+        #of the thisisalocationfile.txt) and
+        #stores path of the file
+           dir=$i
+           test_path="$(dirname "$dir")"
+       fi
+       let "limit++"
+    done
+
+    #got to the directory with test.py
+    cd $test_path
+    echo "THIS THE SCRAPY PATH"
+    pwd
 
     #runs the scraper code
     scrapy crawl empire
@@ -75,23 +95,27 @@ else
     #Finds the location of the test.py file
     export GOOGLE_API_CREDENTIALS=$file_path  
 
-    array=(`find $PWD -name test.py`)
+    cd
+    array=(`find $PWD -name thisisalocationfile.txt`)
     limit=1
     for i in "${array[@]}"
     #finds the final path of the file with the API credentials
     do :
        if [ "${#array[@]}" -eq "${limit}" ]; then
         #when at the last value (correct location
-        #of the client_secret.json) and
+        #of the thisisalocationfile.txt) and
         #stores path of the file
-           test_path=$i
+           dir=$i
+           test_path="$(dirname "$dir")"
        fi
        let "limit++"
     done
 
     #got to the directory with test.py
-    cd $parent_path
-
+    cd $test_path
+    pwd
     #run the scrapy code
     scrapy crawl empire
+fi
 
+echo "DONE"
