@@ -7,10 +7,10 @@ from scrapy.http import Request
 from scrapy.selector import HtmlXPathSelector
 from pathlib import Path
 from scrapy import signals
-from scrapy.xlib.pydispatch import dispatcher
 from scrapy.utils.python import to_native_str
 import googleapiclient._auth
 import gspread
+from pydispatch import dispatcher
 
 
 

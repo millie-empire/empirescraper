@@ -25,6 +25,8 @@ ROBOTSTXT_OBEY = True
 FEED_FORMAT = "csv"
 FEED_URI = "items.csv"
 
+DOWNLOAD_TIMEOUT = 10
+
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
 

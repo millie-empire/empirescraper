@@ -48,6 +48,8 @@ do :
 done
 
 #creates an environment variable to point to API creds file
+echo "this is the path of the json file"
+echo $file_path
 export GOOGLE_API_CREDENTIALS=$file_path  
 
 
