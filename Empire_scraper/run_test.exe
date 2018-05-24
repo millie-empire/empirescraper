@@ -5,27 +5,6 @@ if [ ${1:-false} == "setupdev" ]
 then
     #start message
     echo "Installing required packages"
-    
-    cd
-
-    #finds the path of the file with the API credentials
-    array=(`find $PWD -name client_secret.json`)
-    limit=1
-    for i in "${array[@]}"
-    #finds the final path of the file with the API credentials
-    do :
-	   if [ "${#array[@]}" -eq "${limit}" ]; then
-    	#when at the last value (correct location
-    	#of the client_secret.json) and
-    	#stores path of the file
-    	   file_path=$i
-	   fi
-	   let "limit++"
-    done
-    
-    #creates an environment variable to point to API creds file
-    export GOOGLE_API_CREDENTIALS=$file_path  
-
 
     #finds the location of requirements.txt
     array=(`find $PWD -name requirements.txt`)
@@ -48,12 +27,36 @@ then
 
     #installs the required packages
     pip install -r requirements.txt
-    
-    cd
+fi
+
+
+cd
+
+#finds the path of the file with the API credentials
+array=(`find $PWD -name client_secret.json`)
+limit=1
+for i in "${array[@]}"
+#finds the final path of the file with the API credentials
+do :
+   if [ "${#array[@]}" -eq "${limit}" ]; then
+    #when at the last value (correct location
+    #of the client_secret.json) and
+    #stores path of the file
+       file_path=$i
+   fi
+   let "limit++"
+done
+
+#creates an environment variable to point to API creds file
+export GOOGLE_API_CREDENTIALS=$file_path  
+
+
+
+cd
+    #finds the location of the spider to crawl the webpages
     array=(`find $PWD -name thisisalocationfile.txt`)
     limit=1
     for i in "${array[@]}"
-    #finds the final path of the file with the API credentials
     do :
        if [ "${#array[@]}" -eq "${limit}" ]; then
         #when at the last value (correct location
@@ -72,50 +75,5 @@ then
 
     #runs the scraper code
     scrapy crawl empire
-
-#if packages already installed
-else
-    cd
-
-    #finds the path of the file with the API credentials
-    array=(`find $PWD -name client_secret.json`)
-    limit=1
-    for i in "${array[@]}"
-    #finds the final path of the file with the API credentials
-    do :
-       if [ "${#array[@]}" -eq "${limit}" ]; then
-        #when at the last value (correct location
-        #of the client_secret.json) and
-        #stores path of the file
-           file_path=$i
-       fi
-       let "limit++"
-    done
-    
-    #Finds the location of the test.py file
-    export GOOGLE_API_CREDENTIALS=$file_path  
-
-    cd
-    array=(`find $PWD -name thisisalocationfile.txt`)
-    limit=1
-    for i in "${array[@]}"
-    #finds the final path of the file with the API credentials
-    do :
-       if [ "${#array[@]}" -eq "${limit}" ]; then
-        #when at the last value (correct location
-        #of the thisisalocationfile.txt) and
-        #stores path of the file
-           dir=$i
-           test_path="$(dirname "$dir")"
-       fi
-       let "limit++"
-    done
-
-    #got to the directory with test.py
-    cd $test_path
-    pwd
-    #run the scrapy code
-    scrapy crawl empire
-fi
 
 echo "DONE"
