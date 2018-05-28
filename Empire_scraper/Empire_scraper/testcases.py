@@ -61,6 +61,16 @@ class ScraperTest(unittest.TestCase):
 		for link in self.output_elink:
 			self.assertTrue('.ly' not in link and '.am' not in link and 'redirect' not in link)
 
+	#check if the scraper is able to get all the external links
+	def _scraper_test(self):
+		process = Crawler Process({
+			'USER_AGENT': 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)'
+		})
+		process.crawl(MySpider)
+		process.start()
+
+
+
 	#runs all the unit tests
 	def test_all(self):
 		self._test_external()
