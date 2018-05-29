@@ -1,15 +1,20 @@
 #!/bin/bash  
+#This file will install the required packages, get the credentials needed to access the 
+#google sheets as well as run the scrapy code to get the list of external links 
+#and their corresponding internal links from a list of inputted webpages
 
-#Start up
+
+#Start up (need to add keyword setupdev to run this portion)
 if [ ${1:-false} == "setupdev" ]
 then
     #start message
     echo "Installing required packages"
-
+    cd
     #finds the location of requirements.txt
     array=(`find $PWD -name requirements.txt`)
     limit=1
     for i in "${array[@]}"
+    
     #finds the final path of the requirements.txt
     do :
     	if [ "${#array[@]}" -eq "${limit}" ]; then
@@ -22,60 +27,64 @@ then
     	fi
     	let "limit++"
     done
-    #got to the directory with requirements.txt
+    
+    #goes to the directory with requirements.txt
     cd $parent_path
+    echo "this si the path of the requirements.txt"
+    pwd
 
     #installs the required packages
     pip install -r requirements.txt
+
+    echo "Finished installing packages"
 fi
 
 
 cd
 
+echo "Looking for API credentials file"
 #finds the path of the file with the API credentials
 array=(`find $PWD -name client_secret.json`)
 limit=1
 for i in "${array[@]}"
+
 #finds the final path of the file with the API credentials
 do :
    if [ "${#array[@]}" -eq "${limit}" ]; then
-    #when at the last value (correct location
-    #of the client_secret.json) and
     #stores path of the file
        file_path=$i
    fi
    let "limit++"
 done
 
-#creates an environment variable to point to API creds file
-echo "this is the path of the json file"
-echo $file_path
+#creates an environment variable to point to client_secret.json file
 export GOOGLE_API_CREDENTIALS=$file_path  
+
+echo "Found API credentials file"
 
 
 
 cd
-    #finds the location of the spider to crawl the webpages
-    array=(`find $PWD -name thisisalocationfile.txt`)
-    limit=1
-    for i in "${array[@]}"
-    do :
-       if [ "${#array[@]}" -eq "${limit}" ]; then
-        #when at the last value (correct location
-        #of the thisisalocationfile.txt) and
-        #stores path of the file
-           dir=$i
-           test_path="$(dirname "$dir")"
-       fi
-       let "limit++"
-    done
+echo "Looking for location of spider"
+#finds the location of the spider to crawl the webpages
+array=(`find $PWD -name thisisalocationfile.txt`)
+limit=1
+for i in "${array[@]}"
+do :
+   if [ "${#array[@]}" -eq "${limit}" ]; then
+    #when at the last value (correct location
+    #of the thisisalocationfile.txt) and
+    #stores path of the file
+       dir=$i
+       test_path="$(dirname "$dir")"
+   fi
+   let "limit++"
+done
 
-    #got to the directory with test.py
-    cd $test_path
-    echo "THIS THE SCRAPY PATH"
-    pwd
+#got to the directory with test.py
+cd $test_path
 
-    #runs the scraper code
-    scrapy crawl empire
+#runs the scraper code
+scrapy crawl empire
 
-echo "DONE"
+echo "Done scraping"

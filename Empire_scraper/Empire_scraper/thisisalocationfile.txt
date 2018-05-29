@@ -1,0 +1,5 @@
+This file is used to find the location of the Empire_Scraper folder.
+
+Refer to the run_test.exe to see the use of the file.
+
+PLEASE DO NOT DELETE!
