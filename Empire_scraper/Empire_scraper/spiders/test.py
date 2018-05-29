@@ -4,33 +4,27 @@ from scrapy.linkextractors import IGNORED_EXTENSIONS
 from scrapy.spiders import Rule, Spider
 from Empire_scraper.items import EmpireScraperItem
 from scrapy.http import Request
-from scrapy.selector import HtmlXPathSelector
-from pathlib import Path
 from scrapy import signals
-from scrapy.utils.python import to_native_str
-import googleapiclient._auth
-import gspread
+import googleapiclient._auth #needed to get API credentials
+import gspread #needed to write to google spreadsheets
 from pydispatch import dispatcher
-
-
-
-import os #needed to allow deletion of files
 
 #allows the code to access googlesheets 
 credentials= googleapiclient._auth.with_scopes(googleapiclient._auth.default_credentials(), scopes=['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive'])
 client = gspread.authorize(credentials)
  
 
-
+#definition of the spider (used to crawl and scrape webpages)
 class MySpider(Spider):
+
+    #name of project
     name = "empire"
 
     def __init__(self):
         dispatcher.connect(self.spider_closed,signals.spider_closed)
-    #only goes within the internal sites 
-    #(finds external sites on the internal site)
-    #allowed_domains = ["empire.ca","empirelife.ca","empirelifeinvestments.ca"]
 
+    #imports the allowed domains (defines what an internal link contains) 
+    #from the google spreadsheet 
     sheet = client.open("Empire Scraper Input")
     alwd_domains_sheet = sheet.worksheet("AllowedDomains")
     allowed_domains = []
@@ -38,6 +32,7 @@ class MySpider(Spider):
         allowed_domains.append(domain.strip())
 
 
+    #imports restricted domains (defines what links to ignore)
     restr_domains_sheet = sheet.worksheet("RestrictedDomains")
     restricted_domains = []
     for domain in restr_domains_sheet.col_values(1):
@@ -57,7 +52,7 @@ class MySpider(Spider):
 
     # Method which starts the requests by visiting all URLs specified in start_urls
     def start_requests(self):
-        #opens the google spreadsheet with the start_urls
+        #opens the google spreadsheet with the start_urls (urls to scrape first)
         sheet = client.open("Empire Scraper Input")
         start_sheet = sheet.worksheet("StartUrls")
 
@@ -78,24 +73,27 @@ class MySpider(Spider):
               
                           
         for link in links:
-            
-            #if self.i < 17000:
-            # check if link contains an allowed domain; if 
+           
+            # check if link contains an allowed domain 
             internal_link = False
             for allowed_domain in self.allowed_domains:
                 if allowed_domain in link.url:
                     internal_link = True
 
+            #checks if link contains a restricted domains
             is_allowed = True
             for restricted_domain in self.restricted_domains:
                 if restricted_domain in link.url:
                     is_allowed = False
 
+
             if is_allowed:
 
+                #checks if link has any of the following strings
                 if ".ly" in link.url or ".am" in link.url or "redirect" in link.url:
                     yield scrapy.Request(link.url, callback=self.parse) 
 
+                #external link added to dictionary if it is not already contained
                 elif not internal_link:
                     recorded = False
                     for i in self.items:
@@ -111,7 +109,7 @@ class MySpider(Spider):
                         item['link'] = link.url
                         self.items.append(item)
 
-                # internal link but not checked and is not a document
+                # adds internal link to the dictionary if it is not there
                 elif link.url not in self.internal_links:
                     self.internal_links.add(link.url)
                     # recursively checks internal links that have not been checked
@@ -122,6 +120,7 @@ class MySpider(Spider):
 
     # output to Google sheets before spider closes
     def spider_closed(self, spider):
+        #opens the output spreadsheet
         sheet = client.open("Empire Scraper Output")
         output_sheet = sheet.worksheet("Output")
  
@@ -132,6 +131,7 @@ class MySpider(Spider):
         output_sheet.update_cell(1,1,'External Link')
         output_sheet.update_cell(1,2,'Found on this Page')
 
+        #gets the range of the spreadsheet
         external_list = output_sheet.range('A2:A1000')
         internal_list = output_sheet.range('B2:B1000')
 
@@ -145,7 +145,7 @@ class MySpider(Spider):
                 internal_list[index].value = internal_link
                 index += 1
 
-        # prints to Google sheet
+        #updates to Google sheet
         output_sheet.update_cells(external_list)
         output_sheet.update_cells(internal_list)
 
