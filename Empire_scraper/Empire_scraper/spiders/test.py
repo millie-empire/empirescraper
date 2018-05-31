@@ -136,6 +136,7 @@ class MySpider(Spider):
         internal_list = output_sheet.range('B2:B1000')
 
         index = 0
+        max_row = 1000
 
         for item in self.items:  
             # print external link
@@ -144,6 +145,11 @@ class MySpider(Spider):
                 # print corresponding internal links for external link
                 internal_list[index].value = internal_link
                 index += 1
+
+                if index >= max_row:
+                    max_row += 1000
+                    output_sheet.resize(max_row,2)
+                    index = 0
 
         # prints to Google sheet
         output_sheet.update_cells(external_list)
